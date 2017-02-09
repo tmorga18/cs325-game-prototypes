@@ -1,4 +1,4 @@
-window.onload = function() {
+window.onload = function () {
     // You might want to start with a template that uses GameStates:
     //     https://github.com/photonstorm/phaser/tree/v2.6.2/resources/Project%20Templates/Basic
     
@@ -13,40 +13,60 @@ window.onload = function() {
     
     "use strict";
     
-    var game = new Phaser.Game( 800, 600, Phaser.AUTO, 'game', { preload: preload, create: create, update: update } );
+    var game = new Phaser.Game(800, 600, Phaser.AUTO, 'gameContainer', { preload: preload, create: create, update: update } );
     
     function preload() {
         // Load an image and call it 'logo'.
-        game.load.image( 'logo', 'assets/phaser.png' );
+        game.load.image( 'earth_image', 'assets/earth.png' );
+        game.load.image( 'asteroid_image', 'assets/asteroid1.png' );
     }
     
-    var bouncy;
+    var earth;
+    var asteroid_counter = 0;
+    var asteroid_counter_text = 0;
+    var asteroid;
     
     function create() {
         // Create a sprite at the center of the screen using the 'logo' image.
-        bouncy = game.add.sprite( game.world.centerX, game.world.centerY, 'logo' );
+        earth = game.add.sprite( game.world.centerX, game.world.centerY, 'earth_image' );
         // Anchor the sprite at its center, as opposed to its top-left corner.
         // so it will be truly centered.
-        bouncy.anchor.setTo( 0.5, 0.5 );
+        earth.anchor.setTo( 0.5, 0.5 );
         
         // Turn on the arcade physics engine for this sprite.
-        game.physics.enable( bouncy, Phaser.Physics.ARCADE );
+        //game.physics.enable( earth, Phaser.Physics.ARCADE );
         // Make it bounce off of the world bounds.
-        bouncy.body.collideWorldBounds = true;
+        //earth.body.collideWorldBounds = true;
         
         // Add some text using a CSS style.
         // Center it in X, and position its top 15 pixels from the top of the world.
         var style = { font: "25px Verdana", fill: "#9999ff", align: "center" };
-        var text = game.add.text( game.world.centerX, 15, "Build something amazing.", style );
+        var text = game.add.text( game.world.centerX, 15, "Asteroids!", style );
         text.anchor.setTo( 0.5, 0.0 );
+        
+        asteroid_counter_text = game.add.text(game.world.centerX, 100, 'Counter: 0', { font: "32px Arial", fill: "#ffffff", align: "center" });
+        asteroid_counter_text.anchor.setTo(0.5, 0.5);
+        
+        game.time.events.loop(Phaser.Timer.SECOND, spawnAsteroid, this);
+        
+        game.physics.enable(asteroid, Phaser.Physics.ARCADE);
+        //asteroid.body.velocity.x=500;
+    }
+    
+    function spawnAsteroid() {
+        asteroid = game.add.sprite( 0, game.world.centerY, 'asteroid_image' );
+        
+        asteroid_counter++;
+        asteroid_counter_text.setText('Counter: ' + asteroid_counter);
     }
     
     function update() {
+        //var counter = 1;
         // Accelerate the 'logo' sprite towards the cursor,
         // accelerating at 500 pixels/second and moving no faster than 500 pixels/second
         // in X or Y.
         // This function returns the rotation angle that makes it visually match its
         // new trajectory.
-        bouncy.rotation = game.physics.arcade.accelerateToPointer( bouncy, this.game.input.activePointer, 500, 500, 500 );
+        //earth.rotation = game.physics.arcade.accelerateToPointer( earth, this.game.input.activePointer, 500, 500, 500 );
     }
 };

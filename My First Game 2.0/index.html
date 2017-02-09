@@ -1,0 +1,102 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<meta charset="UTF-8" />
+	<title>Phaser Basic Project Template</title>
+	<script src="js/phaser.min.js"></script>
+	<!-- Boot.js must come first since it creates the BasicGame object
+	that stores all the states. -->
+	<script src="js/Boot.js"></script>
+	<script src="js/Preloader.js"></script>
+	<script src="js/MainMenu.js"></script>
+	<script src="js/Game.js"></script>
+	<!-- main.js must come last since it references the other ones. -->
+	<script src="js/main.js"></script>
+
+<style>
+body
+{
+    color: #777;
+    font-family: "Avenir", Verdana, sans-serif;
+}
+#readme
+{
+    margin-top: 10px;
+}
+</style>
+
+</head>
+<body>
+<div id="gameContainer"></div>
+<div id="readme">
+<h2>ASTEROIDS!!!</h2>
+<ul>
+
+<li><strong>High Concept:</strong>
+Asteroids are headed towards Earth unless you can stop them!
+</li>
+
+<li><strong>Theme:</strong>
+I chose the "asteroid heading toward Earth" theme.
+</li>
+
+<li><strong>Mandated Variety:</strong>
+State which input, randomness, genre, and play style you used in this prototype.
+The input is through the left mouse click. Randomness is where the asteroids spawn and where they move towards. They also have a random amount of "health". This is a fast paced action game where mouse speed is key.
+</li>
+
+<li><strong>Player Experience Goals:</strong>
+I want my players to have a heart-racing experience.
+</li>
+
+<li><strong>Gameplay:</strong>
+The player can only left click with the mouse on the asteroids to destroy them. If you click on an asteroid enough times, it will blow up. I was not able to get the asteroids to actually collide with the Earth so there is no lose condition.
+</li>
+
+<li><strong>Prototype Goal:</strong>
+This prototype tests the point and click game mechanic.
+</li>
+
+<li><strong>Features:</strong>
+The asteroids have a random amount of "health" and then spawn/move in random directions. When an asteroid spawns, the screen shakes and you can hear rumbling.
+</li>
+
+<li><strong>Setting/Premise:</strong>
+My game takes place right outside Earth's atmosphere. The only player is the person playing the game.
+</li>
+
+<li><strong>Story:</strong>
+The story of the game is that a nearby planet exploded and sent debris and "asteroids" in all directions, endangering the inhabitants of Earth.
+</li>
+
+<li><strong>Target Audience:</strong>
+Young children who want to play an easy game.
+</li>
+
+<li><strong>Play Time:</strong>
+Any amount of time, there is no end.
+</li>
+
+<li><strong>Strategies:</strong>
+The best strategy is to click as fast as possible.
+</li>
+
+<li><strong>Prototype Assets:</strong>
+I borrowed all of my assests from the internet.
+The asteroid sprite was from: http://icons.iconarchive.com/icons/zairaam/bumpy-planets/256/asteroid-icon.png
+The Earth sprite was from: https://openclipart.org/detail/22544/earth
+The asteroid spawning audio file was from: https://www.freesound.org/people/hello_flowers/sounds/28685/
+The asteroid exploding audio file was from: https://www.freesound.org/people/qubodup/sounds/157609/
+The asteroids main menu image is from: https://www.spaceanswers.com/wp-content/uploads/2015/06/RS36581_asteroids-from-mars_finished_JPP-Studio1-lpr.jpg
+The music on the main menu is from: https://machinimasound.com/music/alien-abduction/
+The start button is from: http://www.clker.com/cliparts/W/Z/O/i/x/H/start-hi.png
+</li>
+
+<li><strong>Prototype Closest Other Game:</strong>
+I borrowed almost all of my code from the Phaser Examples.
+</li>
+
+</ul>
+</div>
+</body>
+</html>
