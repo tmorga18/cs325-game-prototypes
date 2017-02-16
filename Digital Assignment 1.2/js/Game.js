@@ -1,6 +1,6 @@
 
-BasicGame.Game = function(game) {
-
+BasicGame.Game = function (game) {
+    
     //  When a State is added to Phaser it automatically has the following properties set on it, even if they already exist:
 
     this.game;      //  a reference to the currently running game (Phaser.Game)
@@ -43,15 +43,11 @@ BasicGame.Game.prototype = {
         this.totalAsteroids = 10;
         this.asteroidCounter = 0;
         
-        this.game.physics.startSystem(Phaser.Physics.ARCADE);
-        this.emitter = this.game.add.emitter(0, 0, 100);
-        this.emitter.makeParticles('explosion_image');
-        
         // Add some text using a CSS style.
         // Center it in X, and position its top 15 pixels from the top of the world.
         var style = { font: "25px Verdana", fill: "#9999ff", align: "center" };
         var titleText = this.game.add.text( this.game.world.centerX, 15, "Asteroids!", style );
-        titleText.anchor.setTo( 0.5, 0.0 );
+        titleText.anchor.setTo(0.5, 0.0);
         
         this.counterText = this.game.add.text(this.game.world.centerX, 70, 'Asteroids destroyed: 0', { font: "22px Arial", fill: "#9999ff", align: "center" });
         this.counterText.anchor.setTo(0.5, 0.5);
@@ -66,6 +62,8 @@ BasicGame.Game.prototype = {
         
         this.bang = this.add.audio('bang_audio');
         this.rumble = this.add.audio('rumble_audio');
+        
+        
     },
     
     buildWorld: function () {
@@ -125,6 +123,10 @@ BasicGame.Game.prototype = {
         //if(checkOverlap(this.earth, this.a)) {
             
         //}
+        
+        this.game.physics.startSystem(Phaser.Physics.ARCADE);
+        this.emitter = this.game.add.emitter(0, 0, 100);
+        this.emitter.makeParticles('explosion_image');
     },
     
     destroyAsteroid: function (sprite) {
