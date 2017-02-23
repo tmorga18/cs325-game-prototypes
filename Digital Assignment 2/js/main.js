@@ -32,22 +32,21 @@ window.onload = function() {
         game.load.image( 'Tree7Sprite', 'assets/Tree7.png' );
         game.load.image( 'Tree8Sprite', 'assets/Tree8.png' );
         
-        //game.load.image( 'DotSprite', 'assets/dot.png' );
-        
         // *** BACKGROUNDS
         game.load.image( 'BackgroundWorld', 'assets/BackgroundWorld.jpg' );
         game.load.image( 'GrassSprite', 'assets/Grass.png' );
     }
 
-    var counter = 0;
-    var counterText;
     var timer = 0;
     var timerText;
-    var x = 0;
-    var y = 0;
-    var positionText;
-    var style
-    //var dot;
+    var evilTwinTimer = 0;
+    var messageText;
+    var message2Text;
+    var highScoreText;
+    var style;
+    var messageStyle;
+    var highScore = 0;
+    var gameOverBool = false;
     
     var grassSprite;
     var House1Sprite;
@@ -74,12 +73,9 @@ window.onload = function() {
         grassSprite = game.add.tileSprite(0, 0, game.width * 2, game.height * 2, 'GrassSprite');
         
         style = { font: "20px Verdana", fill: "#ffffff", align: "center" };
-        counterText = game.add.text( 30, 30, "Counter: 0", style );
+        messageStyle = { font: "32px Verdana", fill: "#ffffff", align: "center" };
         
-        timerText = game.add.text( 30, 70, "Timer: 0", style );
-        
-        positionText = game.add.text( 30, 110, "x = 0    y = 0", style );
-        //dot = game.add.sprite(1, 1, 'DotSprite');
+        game.time.events.loop(Phaser.Timer.SECOND, incrementTimer);
         
         game.physics.startSystem(Phaser.Physics.ARCADE);
         group = game.add.physicsGroup(Phaser.Physics.ARCADE);
@@ -111,6 +107,9 @@ window.onload = function() {
         game.physics.arcade.enable(evilTwin);
         
         game.camera.follow(character);
+        
+        timerText = game.add.text( character.x, character.y + 50, "Timer: 0", style );
+        timerText.anchor.setTo(0.5, 0.5);
         
         //  Here we add a new animation called 'walk'
         //  Because we didn't give any other parameters it's going to make an animation from all available frames in the 'mummy' sprite sheet
@@ -145,16 +144,21 @@ window.onload = function() {
     
     function update() {
         
-        incrementTimer();
-        if(timer > 100) {
-            incrementCounter();
-            timer = 0;
-            
-            evilTwinSpeed = evilTwinSpeed + 15;
-            moveEvilTwinToPoint();
+        if(gameOverBool === true) {
+            if(timer > 5) {
+                messageText.setText("");
+                message2Text.setText("");
+                highScoreText.setText("");
+                timer = 0;
+                gameOverBool == false;
+            }
         }
         
-        //evilTwin.forEach(game.physics.arcade.moveToPointer, game.physics.arcade, false, 200);
+        timerText.setText("Timer: " + timer);
+        timerText.position.x = character.x;
+        timerText.position.y = character.y - 250;
+        
+        incrementEvilTwinTimer();
         
         game.physics.arcade.collide(character, group, collisionHandler, null, this);
         game.physics.arcade.collide(evilTwin, group, collisionHandler, null, this);
@@ -192,18 +196,6 @@ window.onload = function() {
         } else {
             isWalking = false;
         }
-        
-        /*if(isWalking == false) {
-            if(lastKey === 0) {
-                character.animations.play('idleUp', 3, true);
-            } else if(lastKey === 1) {
-                character.animations.play('idleDown', 3, true);
-            } else if(lastKey === 2) {
-                character.animations.play('idleLeft', 3, true);
-            } else {
-                character.animations.play('idleRight', 3, true);
-            }
-        }*/
         
         // To be able to use the keyboard arrows
         /*if (cursors.down.isDown) {
@@ -273,20 +265,22 @@ window.onload = function() {
     }
     
     
-    function incrementCounter() {
-        counter++;
-        counterText.setText("Counter: " + counter);
+    function incrementTimer() {
+        timer++;
     }
     
     
-    function incrementTimer() {
-        timer++;
-        timerText.setText("Timer: " + timer);
+    function incrementEvilTwinTimer() {
+        evilTwinTimer++;
+        if(evilTwinTimer > 100) {
+            evilTwinTimer = 0;
+            evilTwinSpeed = evilTwinSpeed + 25;
+            moveEvilTwinToPoint();
+        }
     }
         
         
     function moveEvilTwinToPoint() {
-        //dot.destroy();
         //var x = game.rnd.integerInRange(0, game.world.width * 2);
         //var y = game.rnd.integerInRange(0, game.world.height * 2);
         //positionText.setText("x = " + x + "    y = " + y);
@@ -297,14 +291,24 @@ window.onload = function() {
     }
     
     
-    function gameOver() {
+    function gameOver () {
         evilTwin.position = new Phaser.Point(game.world.centerX, game.world.centerY);
-        var gameOverText = game.add.text( character.x, character.y, "GAME OVER", style );
-        var gameOverText2 = game.add.text( character.x, character.y - 100, "You lasted for " + timer + " seconds", style );
-        gameOverText.font = 'Arial';
-        gameOverText.fontWeight = 'bold';
-        gameOverText.fontSize = 70;
-        gameOverText.fill = '#ffffff';
+        
+        messageText = game.add.text( character.x, character.y, "GAME OVER", messageStyle );
+        messageText.anchor.setTo(0.5, 0.5);
+        
+        message2Text = game.add.text( character.x, character.y + 75, "You lasted for " + timer + " seconds", messageStyle );
+        message2Text.anchor.setTo(0.5, 0.5);
+        
+        if(timer > highScore) {
+            highScore = timer;
+        }
+        
+        highScoreText = game.add.text( character.x, character.y + 150, "Your high score is " + highScore, style );
+        highScoreText.anchor.setTo(0.5, 0.5);
+        
+        timer = 0;
+        gameOverBool = true;
     }
     
     
@@ -315,6 +319,7 @@ window.onload = function() {
         //game.debug.pointer( game.input.activePointer );
         
         //game.debug.body(character);
+        //game.debug.body(timerText);
         //game.debug.body(House1Sprite);
         //game.debug.body(House2Sprite);
         //game.debug.body(House3Sprite);
