@@ -133,6 +133,7 @@ function mainMenuState(game) {
     
     function startGame() {
         music.stop();
+        //game.state.start("gameOver");
         game.state.start("main");
     }
     
@@ -146,9 +147,7 @@ function mainMenuState(game) {
 function mainGameState(game) {
     
     // World variables
-        var music1;
-        var music2;
-        var music3;
+        var music;
     
         var groundLayer;
         var hillsLayer;
@@ -188,24 +187,25 @@ function mainGameState(game) {
         var idleLeftBoy;
     
     function create() {
+        
         var randomSong = game.rnd.integerInRange(1, 3);
         
         // Add the music and then play it
         switch(randomSong) {
             case 1:
-                music1 = game.add.audio('Music1');
-                music1.volume = 0.01;
-                music1.play();
+                music = game.add.audio('Music1');
+                music.volume = 0.01;
+                music.play();
                 break;
             case 2:
-                music2 = game.add.audio('Music2');
-                music2.volume = 0.01;
-                music2.play();
+                music = game.add.audio('Music2');
+                music.volume = 0.01;
+                music.play();
                 break;
             case 3:
-                music3 = game.add.audio('Music3');
-                music3.volume = 0.01;
-                music3.play();
+                music = game.add.audio('Music3');
+                music.volume = 0.01;
+                music.play();
                 break;
         }
         
@@ -437,6 +437,7 @@ function mainGameState(game) {
     
     
     function gameOver() {
+        music.stop();
         game.state.start("gameOver");
     }
     
@@ -466,8 +467,13 @@ function gameOverState(game) {
         background.height = game.height;
         background.anchor.setTo(0.5, 0.5);
         
+        // Add the "to be continued" text
+        var style = { font: "30px Verdana", fill: "#111111", align: "center" };
+        var text = game.add.text(game.width / 2, 200, "To be continued....", style);
+        text.anchor.setTo(0.5, 0.5);
+        
         // Add the New Game Button
-        var newGameButton = game.add.button(500, 500, 'NewGameButton', startGame, this, 3, 1, 2, 3);
+        //var newGameButton = game.add.button(500, 500, 'NewGameButton', restartGame, this, 3, 1, 2, 3);
         
         // Add the music and then play it
         var music = game.add.audio('VictoryMusic');
@@ -475,8 +481,8 @@ function gameOverState(game) {
         music.play();
     }
     
-    function startGame() {
-        game.state.start("main");
+    function restartGame() {
+        game.state.start("mainMenu");
     }
     
     return {"create": create};
