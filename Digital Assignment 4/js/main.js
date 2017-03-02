@@ -1,5 +1,8 @@
 'use strict';
 
+var introMusic;
+var playerName;
+
 // Runs when the page finishes loading
 window.onload = function () {
     
@@ -8,6 +11,7 @@ window.onload = function () {
     game.state.add("boot", bootState(game));
     game.state.add("preload", preloadState(game));
     game.state.add("mainMenu", mainMenuState(game));
+    game.state.add("intro", introState(game));
     game.state.add("main", mainGameState(game));
     game.state.add("gameOver", gameOverState(game));
     
@@ -58,7 +62,10 @@ function preloadState(game) {
         game.load.image('MainMenuBackground', 'assets/Main Menu/MainMenuBackground.jpg');
         game.load.image('MainMenuLogo', 'assets/Main Menu/PokemonLogo.png');
         game.load.spritesheet('NewGameButton', 'assets/Main Menu/MainMenuNewGameButton.png', 186, 29, 3);
-        game.load.audio('MainMenuMusic', ['assets/Main Menu/MainMenuMusic.mp3']);
+        game.load.audio('MainMenuMusic', ['assets/Main Menu/MainMenuMusic.mp3']); 
+        
+        game.load.image('Oak1', 'assets/Main Menu/Oak1.png');
+        
         
         // Load game assets
         
@@ -105,7 +112,6 @@ function mainMenuState(game) {
     
     var background = null;
     var newGameButton;
-    var music;
     
     function create() {
         // Add main menu background image
@@ -122,9 +128,9 @@ function mainMenuState(game) {
         newGameButton = game.add.button(500, 500, 'NewGameButton', startGame, this, 3, 1, 2, 3);
         
         // Add the music and then play it
-        music = game.add.audio('MainMenuMusic');
-        music.volume = 0.01;
-        music.play();
+        introMusic = game.add.audio('MainMenuMusic');
+        introMusic.volume = 0.01;
+        introMusic.play();
     }
     
     function update() {
@@ -132,8 +138,67 @@ function mainMenuState(game) {
     }
     
     function startGame() {
-        music.stop();
-        //game.state.start("gameOver");
+        //music.stop();
+        //game.state.start("main");
+        game.state.start("intro");
+    }
+    
+    return {"create": create, "update": update, "startGame": startGame};
+}
+
+
+// ***************** INTRO STATE *****************
+
+
+function introState(game) {
+    
+    var oak;
+    var text;
+    var timer = 0;
+    var counter = 0;
+    var oakText = ["Hello there!", "Welcome to the world of Pokemon.", "My name is Professor Oak.", "What's your name?", " ", "Nice to meet you " + localStorage.getItem("playerName"), "This world is populated by creatures called Pokemon", "Your job is to catch them all!", " "];
+    
+    function create() {
+        game.stage.backgroundColor = "#ffffff"
+        
+        // Add Professor Oak image
+        oak = game.add.sprite(game.width / 2, 250, 'Oak1');
+        oak.anchor.setTo(0.5, 0.5);
+        
+        // Add the text
+        var style = { font: "30px Verdana", fill: "#111111", align: "center" };
+        text = game.add.text(game.width / 2, 500, "", style);
+        text.anchor.setTo(0.5, 0.5);
+        
+        game.time.events.loop(Phaser.Timer.SECOND, incrementTimer);
+    }
+    
+    function update() {
+        if(counter >= oakText.length) {
+            startGame();
+        }
+        
+        if(timer >= 2 && counter < oakText.length) {
+            if(counter == 4) {
+                promptName();
+            }
+            text.setText(oakText[counter]);
+            counter++;
+            timer = 0;
+        }
+    }
+    
+    function promptName() {
+        playerName = prompt("Please enter your name", "name");
+        localStorage.setItem("playerName", playerName);
+    }
+    
+    function incrementTimer() {
+        timer++;
+    }
+    
+    function startGame() {
+        introMusic.stop();
         game.state.start("main");
     }
     
@@ -155,6 +220,8 @@ function mainGameState(game) {
         var buildingsLayer;
         var waterAnimatedLayer;
         var riverbankLayer;
+        var depthLayer;
+        var depthGroup;
     
     // Character variables
         var character;
@@ -222,6 +289,7 @@ function mainGameState(game) {
         
         // Add all the layers to collide with
         groundLayer = map.createLayer('Ground');
+        depthLayer = map.createLayer('Depth');
         hillsLayer = map.createLayer('Hills');
         treesLayer = map.createLayer('Trees');
         buildingsLayer = map.createLayer('Buildings');
@@ -287,6 +355,14 @@ function mainGameState(game) {
         
         idleLeftBoy = boy.animations.add('idleLeftBoy', [4], 3, true, true);
         walkLeftBoy = boy.animations.add('walkLeftBoy', [5, 6, 7], 3, true, true);
+        
+        // Create a group so that the character will sort behind objects
+        depthGroup = game.add.group();
+        depthGroup.add(vulpix1);
+        depthGroup.add(vulpix2);
+        depthGroup.add(vulpix3);
+        depthGroup.add(character);
+        depthGroup.add(depthLayer);
     }
     
     
