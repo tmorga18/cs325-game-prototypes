@@ -2,6 +2,7 @@
 
 var introMusic;
 var playerName;
+var musicVolume = 0.1;
 
 // Runs when the page finishes loading
 window.onload = function () {
@@ -62,6 +63,7 @@ function preloadState(game) {
         game.load.image('MainMenuBackground', 'assets/Main Menu/MainMenuBackground.jpg');
         game.load.image('MainMenuLogo', 'assets/Main Menu/PokemonLogo.png');
         game.load.spritesheet('NewGameButton', 'assets/Main Menu/MainMenuNewGameButton.png', 186, 29, 3);
+        
         game.load.audio('MainMenuMusic', ['assets/Main Menu/MainMenuMusic.mp3']); 
         
         game.load.image('Oak1', 'assets/Main Menu/Oak1.png');
@@ -126,16 +128,18 @@ function mainMenuState(game) {
         
         // Add the New Game Button
         newGameButton = game.add.button(500, 500, 'NewGameButton', startGame, this, 3, 1, 2, 3);
+        newGameButton.anchor.setTo(0, 0);
         
         // Add the music and then play it
         introMusic = game.add.audio('MainMenuMusic');
-        introMusic.volume = 0.01;
+        introMusic.volume = musicVolume;
         introMusic.play();
     }
     
     function update() {
         
     }
+    
     
     function startGame() {
         //music.stop();
@@ -261,17 +265,17 @@ function mainGameState(game) {
         switch(randomSong) {
             case 1:
                 music = game.add.audio('Music1');
-                music.volume = 0.01;
+                music.volume = musicVolume;
                 music.play();
                 break;
             case 2:
                 music = game.add.audio('Music2');
-                music.volume = 0.01;
+                music.volume = musicVolume;
                 music.play();
                 break;
             case 3:
                 music = game.add.audio('Music3');
-                music.volume = 0.01;
+                music.volume = musicVolume;
                 music.play();
                 break;
         }
@@ -553,7 +557,7 @@ function gameOverState(game) {
         
         // Add the music and then play it
         var music = game.add.audio('VictoryMusic');
-        music.volume = 0.01;
+        music.volume = musicVolume;
         music.play();
     }
     
