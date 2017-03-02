@@ -1,10 +1,17 @@
-<!DOCTYPE html>
+<!DOCTYPE HTML>
 <html>
 <head>
-    <meta charset="utf-8">
-    <title>Hello! Amaze!</title>
-    <script src="js/phaser.js"></script>
-    <script src="js/main.js"></script>
+	<meta charset="UTF-8" />
+	<title>Phaser Basic Project Template</title>
+	<script src="js/phaser.min.js"></script>
+	<!-- Boot.js must come first since it creates the BasicGame object
+	that stores all the states. -->
+	<script src="js/Boot.js"></script>
+	<script src="js/Preloader.js"></script>
+	<script src="js/MainMenu.js"></script>
+	<script src="js/Game.js"></script>
+	<!-- main.js must come last since it references the other ones. -->
+	<script src="js/main.js"></script>
 
 <style>
 body
@@ -22,66 +29,71 @@ body
 <body>
 <div id="gameContainer"></div>
 <div id="readme">
-<h2>Your game title</h2>
+<h2>ASTEROIDS!!!</h2>
 <ul>
 
 <li><strong>High Concept:</strong>
-A one-sentence summary of your game.
+Asteroids are headed towards Earth unless you can stop them!
 </li>
 
 <li><strong>Theme:</strong>
-State which of the Storymatic themes you used.
+I chose the "asteroid heading toward Earth" theme.
 </li>
 
 <li><strong>Mandated Variety:</strong>
 State which input, randomness, genre, and play style you used in this prototype.
+The input is through the left mouse click. Randomness is where the asteroids spawn and where they move towards. They also have a random amount of "health". This is a fast paced action game where mouse speed is key.
 </li>
 
 <li><strong>Player Experience Goals:</strong>
-What experience do you want players to have when playing your game?
+I want my players to have a heart-racing experience.
 </li>
 
 <li><strong>Gameplay:</strong>
-A paragraph describing the actions the player can perform, the system dynamics, and the core mechanic. Include a concise explanation of the prototype’s inputs and their expected effects (how to play). You can also describe game play that is not in the prototype. You may include mock-up images for parts of the game not in the prototype.
+The player can only left click with the mouse on the asteroids to destroy them. If you click on an asteroid enough times, it will blow up. I was not able to get the asteroids to actually collide with the Earth so there is no lose condition.
 </li>
 
 <li><strong>Prototype Goal:</strong>
-What game mechanic is this prototype evaluating?
+This prototype tests the point and click game mechanic.
 </li>
 
 <li><strong>Features:</strong>
-What are the unique aspects of your game that set it apart?
+The asteroids have a random amount of "health" and then spawn/move in random directions. When an asteroid spawns, the screen shakes and you can hear rumbling.
 </li>
 
 <li><strong>Setting/Premise:</strong>
-A paragraph about the world your game is set in and who the characters are. What makes the game world and its occupants unique and interesting? Do the tokens represent something? If the game has a backstory, put it here. If the game is abstract, then say so.
+My game takes place right outside Earth's atmosphere. The only player is the person playing the game.
 </li>
 
 <li><strong>Story:</strong>
-If the game has a story (or you envision a story for the full game), summarize it in a paragraph. How will the dramatic tension interact with the gameplay tension?
+The story of the game is that a nearby planet exploded and sent debris and "asteroids" in all directions, endangering the inhabitants of Earth.
 </li>
 
 <li><strong>Target Audience:</strong>
-A single sentence that describes the demographic you're trying to reach.
+Young children who want to play an easy game.
 </li>
 
 <li><strong>Play Time:</strong>
-How long does your game take to play?
+Any amount of time, there is no end.
 </li>
 
 <li><strong>Strategies:</strong>
-What player strategies do you expect will be effective at playing this game?
+The best strategy is to click as fast as possible.
 </li>
 
 <li><strong>Prototype Assets:</strong>
-Did you make your prototype assets from scratch? Did you borrow them? Cite your sources here.
-<ul>
-<li>Bouncing Phaser image: <a href="https://phaser.io/download/logo">Phaser logo</a></li>
-</ul>
+I borrowed all of my assests from the internet.
+The asteroid sprite was from: http://icons.iconarchive.com/icons/zairaam/bumpy-planets/256/asteroid-icon.png
+The Earth sprite was from: https://openclipart.org/detail/22544/earth
+The asteroid spawning audio file was from: https://www.freesound.org/people/hello_flowers/sounds/28685/
+The asteroid exploding audio file was from: https://www.freesound.org/people/qubodup/sounds/157609/
+The asteroids main menu image is from: https://www.spaceanswers.com/wp-content/uploads/2015/06/RS36581_asteroids-from-mars_finished_JPP-Studio1-lpr.jpg
+The music on the main menu is from: https://machinimasound.com/music/alien-abduction/
+The start button is from: http://www.clker.com/cliparts/W/Z/O/i/x/H/start-hi.png
 </li>
 
 <li><strong>Prototype Closest Other Game:</strong>
-Which other game most closely resembles your game? If you are borrowing code from a Phaser Example, you must say so here. If you borrow code from elsewhere, you must say so here.
+I borrowed almost all of my code from the Phaser Examples.
 </li>
 
 </ul>

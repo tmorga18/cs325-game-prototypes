@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Pokemon Knock Off</title>
+    <script src="js/phaser.js"></script>
+    <script src="js/main.js"></script>
+
+<style>
+body
+{
+    color: #777;
+    font-family: "Avenir", Verdana, sans-serif;
+}
+#readme
+{
+    margin-top: 10px;
+}
+</style>
+
+</head>
+<body>
+<div id="game"></div>
+<div id="readme">
+<h2>Pokemon Knock Off</h2>
+<ul>
+
+<li><strong>High Concept:</strong>
+    Collect as a team of Pokemon to start your journey!
+</li>
+
+<li><strong>Theme:</strong>
+    I was aiming for the Preservationist theme. At first I wanted the character to protect the Pokemon in a sort of safari sanctuary, however I got a little offtrack and just remade Pokemon.
+</li>
+
+<li><strong>Mandated Variety:</strong>
+    Input is direct using the WASD keys and it has a clickable button to start the game. It has a little bit of randomness to decide which song to play during the game and also to decide which way the pokemon will face. It is a top down adventure game based on the Gameboy game, Pokemon. 
+</li>
+
+<li><strong>Player Experience Goals:</strong>
+    I want the players to experience a sense of adventure and I want them to explore the world and to enjoy the amazing assets I found online. I took a lot of time to implement them and to build the world.
+</li>
+
+<li><strong>Gameplay:</strong>
+    There isn't a lot of functionality in the game. The player can move in four directions. This game was more about the polish of the looks and feel of the game rather than the gameplay. The goal of the game is to gather all of the Pokemon in the game (by walking up and colliding with them) and get them to follow you. Once you have gathered up a team, your friend will meet you and you can start your adventure!
+</li>
+
+<li><strong>Prototype Goal:</strong>   
+    I focused a lot on creating a working Tilemap that would visually draw in the player.
+</li>
+
+<li><strong>Features:</strong>
+    I spent a lot of time looking for the right assets and tweaking them in Photoshop to look and feel just right. I also spent a lot of time creating Tile animations in Tiled, but it turns out that Phaser does not implement Tile animations. I also spent a lot of time trying to get the implement depth of field between the characters and the TileMap... but again, Phaser cannot do depth of field with TileMaps.
+</li>
+
+<li><strong>Setting/Premise:</strong>
+    The game takes place in the world of Pokemon, in a new town that I created. It is surrounded by mountains, forests, a stream, and the ocean. There are a few houses and shops in the town.
+</li>
+
+<li><strong>Story:</strong>
+    The story is the same in every Pokemon game. You start out as a young person who is just coming of age and is ready to head out and see the world and capture all the Pokemon.
+</li>
+
+<li><strong>Target Audience:</strong>
+    I'm trying to reach all audiences, but probably the younger generations and anyone who enjoys exploring new worlds.
+</li>
+
+<li><strong>Play Time:</strong>
+    Right now, it takes just a few minutes but I'm hoping to expand on this game and create more levels where the player can explore and find new pokemon. I would also (maybe) like to implement a battle system for catching Pokemon.
+</li>
+
+<li><strong>Strategies:</strong>
+    There are no strategies right now since it's more about enjoying the setting.
+</li>
+
+<li><strong>Prototype Assets:</strong>
+
+<ul>
+    <li>Preload Assets</li>
+    <ul>
+        <li><a href="http://orig04.deviantart.net/ba30/f/2012/311/3/c/minimalist_pokemon_poster_by_boredbored-d5kbiq3.jpg">Preload Background</a></li>
+    
+        <li>I modified this one in Photoshop <a href="https://lh4.googleusercontent.com/-9loZ207C-zw/TXoZyPstHXI/AAAAAAAAAMM/TB54jrZhvqM/s1600/CustomProgressBar.PNG">Preload Loading Bar</a></li>
+    </ul>
+    
+    <li>Main Menu Assets</li>
+    <ul>
+        <li><a href="http://hd-wall-papers.com/single/1576766-backgrounds-pokemon.html">Main Menu Background</a></li>
+    
+        <li><a href="https://www.youtube.com/watch?v=NGihANDCho0">Main Menu Music</a></li>
+    </ul>
+    
+    <li>World Assets</li>
+    <ul>
+        <li><a href="http://files.pokefans.net/images/fanart/mapping/ressourcen_neu/tileset-pokemon_dawn.png">Lots of assets!</a></li>
+        
+        <li><a href="https://www.youtube.com/watch?v=axKDCZd4Mfc">Game Music</a></li>
+    </ul>
+    
+    <li>Character Assets</li>
+    <ul>
+        <li><a href="http://fogu.com/hmforum/viewtopic.php?t=85522">Main Character Spritesheet</a></li>
+    
+        <li><a href="https://www.spriters-resource.com/ds_dsi/pokemonmysterydungeonexplorersoftimedarkness/sheet/22836/">Vulpix Spritesheet</a></li>
+    
+        <li><a href="http://orig14.deviantart.net/200a/f/2012/076/a/a/pokemon_oc_sprite_sheet_by_theonelasttime-d4t3ba4.png">Random Pokemon Spritesheet</a></li>
+    
+        <li><a href="http://s42.photobucket.com/user/Pikachutwo2/media/Sprite%20Sheets/PikatwoSpriteSheetPokemon2.png.html">Random Pokemon Spritesheet 2</a></li>
+        
+        <li><a href="http://emeraldprojects.me.uk/wp-content/uploads/2011/09/CharsetRed1.png">Boy</a></li>
+    </ul>
+</ul>
+</li>
+
+<li><strong>Prototype Closest Other Game:</strong>
+    This is a very close replica to the game, Pokemon. I just the Phaser documentation extensively in order to get functions to work.
+</li>
+
+</ul>
+</div>
+</body>
+</html>
