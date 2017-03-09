@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Pokemon - Polished</title>
+    <script src="js/phaser.js"></script>
+    <script src="js/main.js"></script>
+
+<style>
+body
+{
+    color: #777;
+    font-family: "Avenir", Verdana, sans-serif;
+}
+#readme
+{
+    margin-top: 10px;
+}
+</style>
+
+</head>
+<body>
+<div id="game"></div>
+<div id="readme">
+<h2>Pokemon - Polished</h2>
+<ul>
+
+<li><strong>High Concept:</strong>
+    Collect a team of Pokemon and then start your adventure!
+</li>
+
+<li><strong>Theme:</strong>
+    The theme is still Preservationist in a way since you are taking care of Pokemon.
+</li>
+
+<li><strong>Mandated Variety:</strong>
+    Input is direct using the WASD keys and it has a clickable button to start the game. It also has a bit of mouse functionality where if you hover over a Pokemon, it will show you its stats. It has randomness to decide which song to play during the game, which decide direction the pokemon will move, which animation the Pokemon will play, what level the Pokemon spawns as, and I added Pokemon spawn locations around the Tiled map where the Pokemon will randomly spawn. It is a top down adventure game based on the Gameboy game, Pokemon. 
+</li>
+
+<li><strong>Player Experience Goals:</strong>
+    I want the players to experience a sense of adventure and I want them to explore the world and to enjoy the amazing assets I found online. I took a lot of time to implement them and to build the world.
+</li>
+
+<li><strong>Gameplay:</strong>
+    The player can move in four directions. The goal of the game is to gather all of the Pokemon in the game. When the player touches a Pokemon, the pokemon will be "caught" and will follow the player around the map. When a Pokemon is "caught", they will be added to the player's current list of caught Pokemon, and a Pokeball will appear in the bottom right corner to show that the player now has a Pokemon. Above the Pokeball will be a picture of the type of Pokemon caught and it's level. Once you have 6 Pokemon, your friend will appear and if you go to him, the game is over.
+</li>
+
+<li><strong>Prototype Goal:</strong>   
+    Have an actual game mechanic and playable functionality with a start and finish.
+</li>
+
+<li><strong>Features:</strong>
+    There is an initial loading screen and once the game loads, a main menu loads where you can either start the game, lower the volume, or raise the volume. When the start button is pushed, an introduction will appear that will explain what the game is all about (I made it based off of the introduction in Pokemon on the gameboy). A character (Professor Oak) will prompt the player for his/her name and will then greet the player using their name. I added more animations for the Vulpix and added a Pikachu for more variety. I wanted to add a lot more Pokemon but I did not have enough time. I also updated my Tiled map so that the player and the Pokemon can walk directly in front of houses as well as behind. There is a lot of music too, which will randomly play a song each time you start over. The pokemon also randomly look in different directions and when you touch them, they play a "happy" animation. They will also start to follow you. Once the player catches 6 Pokemon and meets up with his/her friend, a game over stage will appear and the player will be able to start over by pressing a restart game button.
+</li>
+
+<li><strong>Setting/Premise:</strong>
+    The game takes place in the world of Pokemon, in a new town that I created. It is surrounded by mountains, forests, a stream, and the ocean. There are a few houses and shops in the town. I plan on making it so the player can walk in and out of buildings and into other towns.
+</li>
+
+<li><strong>Story:</strong>
+    The story is the same in every Pokemon game. You start out as a young person who is just coming of age and is ready to head out and see the world and capture all the Pokemon.
+</li>
+
+<li><strong>Target Audience:</strong>
+    I'm trying to reach all audiences, but probably the younger generations and anyone who enjoys exploring new worlds.
+</li>
+
+<li><strong>Play Time:</strong>
+    Right now, it takes just a few minutes but I'm hoping to expand on this game and create more levels where the player can explore and find new pokemon. I would also (maybe) like to implement a battle system for catching Pokemon.
+</li>
+
+<li><strong>Strategies:</strong>
+    There are no strategies right now since it's not a competetive game... yet.
+</li>
+
+<li><strong>Prototype Assets:</strong>
+
+<ul>
+    <li>Preload Assets</li>
+    <ul>
+        <li><a href="http://orig04.deviantart.net/ba30/f/2012/311/3/c/minimalist_pokemon_poster_by_boredbored-d5kbiq3.jpg">Preload Background</a></li>
+    
+        <li>I modified this one in Photoshop <a href="https://lh4.googleusercontent.com/-9loZ207C-zw/TXoZyPstHXI/AAAAAAAAAMM/TB54jrZhvqM/s1600/CustomProgressBar.PNG">Preload Loading Bar</a></li>
+    </ul>
+    
+    <li>Main Menu Assets</li>
+    <ul>
+        <li><a href="http://hd-wall-papers.com/single/1576766-backgrounds-pokemon.html">Main Menu Background</a></li>
+    
+        <li><a href="https://www.youtube.com/watch?v=NGihANDCho0">Main Menu Music</a></li>
+        
+        <li><a href="http://cdn.bulbagarden.net/upload/8/84/Professor_Oak_XY.png">Professor Oak</a></li>
+    </ul>
+    
+    <li>World Assets</li>
+    <ul>
+        <li><a href="http://files.pokefans.net/images/fanart/mapping/ressourcen_neu/tileset-pokemon_dawn.png">Lots of assets!</a></li>
+        
+        <li><a href="https://www.youtube.com/watch?v=axKDCZd4Mfc">Game Music</a></li>
+    </ul>
+    
+    <li>Character Assets</li>
+    <ul>
+        <li><a href="http://fogu.com/hmforum/viewtopic.php?t=85522">Main Character Spritesheet</a></li>
+    
+        <li><a href="https://www.spriters-resource.com/ds_dsi/pokemonmysterydungeonexplorersoftimedarkness/sheet/22836/">Vulpix Spritesheet</a></li>
+    
+        <li><a href="http://orig14.deviantart.net/200a/f/2012/076/a/a/pokemon_oc_sprite_sheet_by_theonelasttime-d4t3ba4.png">Random Pokemon Spritesheet</a></li>
+    
+        <li><a href="http://s42.photobucket.com/user/Pikachutwo2/media/Sprite%20Sheets/PikatwoSpriteSheetPokemon2.png.html">Random Pokemon Spritesheet 2</a></li>
+        
+        <li><a href="http://emeraldprojects.me.uk/wp-content/uploads/2011/09/CharsetRed1.png">Boy</a></li>
+    </ul>
+</ul>
+</li>
+
+<li><strong>Prototype Closest Other Game:</strong>
+    This is a very close replica to the game, Pokemon. I just the Phaser documentation extensively in order to get functions to work.
+</li>
+
+</ul>
+</div>
+</body>
+</html>
