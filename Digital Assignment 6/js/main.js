@@ -117,7 +117,7 @@ function preloadState(game) {
         game.load.image('OrcSprite', 'assets/World/Orc.png');
         game.load.image('PeonSprite', 'assets/World/Peon.png');
         game.load.image('RedX', 'assets/World/RedX.png');
-        game.load.spritesheet('UpgradeButton', 'assets/World/UpgradeButton.png', 85, 85);
+        game.load.spritesheet('UpgradeButton', 'assets/World/upgradeButton.png', 85, 85);
     }
     
     function create() {
