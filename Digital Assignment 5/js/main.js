@@ -37,6 +37,10 @@ var currentPokemon = [];
 var pokeball1, pokeball2, pokeball3, pokeball4, pokeball5, pokeball6;
 var currentPokeballs = [];
 
+var allNPCs = [];
+
+var allPokemon = [];
+
 /*****************************************************************************************
                                     END OF: GLOBAL VARIABLES
  *****************************************************************************************/
@@ -146,25 +150,27 @@ function preloadState(game) {
         game.load.audio('Music2', ['assets/Music/Pewter City.mp3']);
         game.load.audio('Music3', ['assets/Music/Road to Viridian City.mp3']);
         game.load.audio('VictoryMusic', ['assets/Music/Victory Theme.mp3']);
+        game.load.audio('PokemonCaughtAudio', ['assets/Music/PokemonCaughtAudio.mp3']);
         
         game.load.image('PokeballSprite', 'assets/World/PokeballSprite.png');
         
         // TileMap
         game.load.tilemap('tilemap', 'assets/World/TileMap.json', null, Phaser.Tilemap.TILED_JSON);
         game.load.image('tiles', 'assets/World/PokemonTiledAssets.png');
-        game.load.image('SpawnPointSprite', 'assets/World/SpawnPointSprite.png');
+        game.load.image('EmptySprite', 'assets/World/EmptySprite.png');
         
         //  ** Player **
         //  21x30 is the size of each frame
         //  There are 16 frames in the PNG - you can leave this value blank if the frames fill up the entire PNG, but in this case there are some
         //  blank frames at the end, so we tell the loader how many to load
         game.load.spritesheet('RedheadGirlSprite', 'assets/Characters/RedheadGirlSpritesheet.png', 21, 30);
-        
-        game.load.spritesheet('VulpixSprite', 'assets/Characters/VulpixSpritesheet.png', 30, 30);
-        
-        game.load.spritesheet('PikachuSprite', 'assets/Characters/PikachuSpritesheet.png', 30, 30);
-        
         game.load.spritesheet('BoySprite', 'assets/Characters/BoySpritesheet.png', 64, 64);
+        
+        game.load.spritesheet('BulbasaurSprite', 'assets/Characters/BulbasaurSpritesheet.png', 30, 30);
+        game.load.spritesheet('CharmanderSprite', 'assets/Characters/CharmanderSpritesheet.png', 30, 30);
+        game.load.spritesheet('SquirtleSprite', 'assets/Characters/SquirtleSpritesheet.png', 30, 30);
+        game.load.spritesheet('PikachuSprite', 'assets/Characters/PikachuSpritesheet.png', 30, 30);
+        game.load.spritesheet('VulpixSprite', 'assets/Characters/VulpixSpritesheet.png', 30, 30);
         
         preloadProgressStyle = { font: "18px Verdana", fill: "#ffffff", align: "center" };
         preloadProgressText = game.add.text(game.width / 2, game.height / 1.095, "", preloadProgressStyle);
@@ -177,8 +183,8 @@ function preloadState(game) {
     
     function update() {
         if(game.cache.isSoundDecoded('MainMenuMusic')) {
-            //game.state.start("main");
-            game.state.start("mainMenu");
+            game.state.start("main");
+            //game.state.start("mainMenu");
         }
     }
     
@@ -256,6 +262,8 @@ function mainMenuState(game) {
     
     function startGame() {
         game.state.start("intro");
+        
+        //introMusic.stop();
         //game.state.start("main");
     }
     
@@ -282,7 +290,7 @@ function introState(game) {
     var oakText = ["Hello there!", "Welcome to the world of Pokemon.", "My name is Professor Oak.", "What is your name?", " ", " **this will change** ", "This world is populated by creatures\n called Pokemon.", "Your job is to catch them all!", "Your very own Pokemon adventure\n is about to unfold.", "Let's go!", ""];
     
     function create() {
-        game.stage.backgroundColor = "#ffffff"
+        game.stage.backgroundColor = "#ffffff";
         
         // Add Professor Oak image
         oak = game.add.sprite(game.width / 2, 250, 'Oak1');
@@ -345,6 +353,8 @@ function introState(game) {
 function mainGameState(game) {
     
     
+    
+    
     // World variables
         var music;
     
@@ -355,12 +365,18 @@ function mainGameState(game) {
         var waterAnimatedLayer;
         var riverbankLayer;
         var spawnPointsGroup;
+        var friendWaypointsGroup;
+        var friendWaypoints = [];
     
         var depthOverLayer;
         var doorsLayer;
         var depthUnderLayer;
         var depthGroup;
     
+    
+        var mainTextBox;
+        var mainTextStyle;
+        var mainText;
         var infoText = "";
         var infoStyle;
     
@@ -368,22 +384,14 @@ function mainGameState(game) {
         var player;
     
         // Movement
-            var idle;
-            var walkDown;
-            var walkRight;
-            var walkLeft;
-            var walkUp;
-            var walkSpeed = 75;
+        var idle;
+        var walkDown;
+        var walkRight;
+        var walkLeft;
+        var walkUp;
+        var walkSpeed = 75;
 
     // Pokemon variables
-        var listOfPokemonInThisStage = [listOfPokemon[0]];
-        var pikachu;
-        var vulpix;
-        var pikachu2;
-        var vulpix2;
-        var pikachu3;
-        var vulpix3;
-    
         // Movement
         var idleDown;
         var idleRight;
@@ -392,72 +400,78 @@ function mainGameState(game) {
         var followPlayer = false;
     
     // NPC Variables
-        var boy;
-        var walkLeftBoy;
-        var idleLeftBoy;
+        var friend;
+        var walkLeftFriend;
+        var idleLeftFriend;
 
+    
+    
     
     /************************************* CREATE *************************************/
     
     function create() {
         
-        var randomSong = game.rnd.integerInRange(1, 3);
+        // ****************** CREATE WORLD ******************
         
-        // Add the music and then play it
-        switch(randomSong) {
-            case 1:
-                music = game.add.audio('Music1');
-                music.volume = musicVolume;
-                music.play();
-                break;
-            case 2:
-                music = game.add.audio('Music2');
-                music.volume = musicVolume;
-                music.play();
-                break;
-            case 3:
-                music = game.add.audio('Music3');
-                music.volume = musicVolume;
-                music.play();
-                break;
-        }
+        //  Enlarge our game world to fit all the different levels (the default is to match the game size)
+            game.world.setBounds(0, 0, 1600, 600);
         
-        
-        // *** CREATE WORLD ***
+        // Add the music and then play a random song
+            var randomSong = game.rnd.integerInRange(1, 3);
+            switch(randomSong) {
+                case 1:
+                    music = game.add.audio('Music1');
+                    music.volume = musicVolume;
+                    music.play();
+                    break;
+                case 2:
+                    music = game.add.audio('Music2');
+                    music.volume = musicVolume;
+                    music.play();
+                    break;
+                case 3:
+                    music = game.add.audio('Music3');
+                    music.volume = musicVolume;
+                    music.play();
+                    break;
+            }
         
         // Start the Arcade Physics
-        game.physics.startSystem(Phaser.Physics.ARCADE);
+            game.physics.startSystem(Phaser.Physics.ARCADE);
         
         // Add the tilemap to the game
-        var map = game.add.tilemap('tilemap');
-        map.addTilesetImage('PokemonTiledAssets', 'tiles');
+            var map = game.add.tilemap('tilemap');
+            map.addTilesetImage('PokemonTiledAssets', 'tiles');
         
         // Add all the layers to collide with
-        groundLayer = map.createLayer('Ground');
-        depthOverLayer = map.createLayer('DepthOver');
-        doorsLayer = map.createLayer('Doors');
-        depthUnderLayer = map.createLayer('DepthUnder');
-        hillsLayer = map.createLayer('Hills');
-        treesLayer = map.createLayer('Trees');
-        buildingsLayer = map.createLayer('Buildings');
-        waterAnimatedLayer = map.createLayer('Water Animated');
-        riverbankLayer = map.createLayer('RiverBank');
+            groundLayer = map.createLayer('Ground');
+            depthOverLayer = map.createLayer('DepthOver');
+            doorsLayer = map.createLayer('Doors');
+            depthUnderLayer = map.createLayer('DepthUnder');
+            hillsLayer = map.createLayer('Hills');
+            treesLayer = map.createLayer('Trees');
+            buildingsLayer = map.createLayer('Buildings');
+            waterAnimatedLayer = map.createLayer('Water Animated');
+            riverbankLayer = map.createLayer('RiverBank');
+            //hillsLayer.debug = true;
+            //treesLayer.debug = true;
+            //buildingsLayer.debug = true;
+            //riverbankLayer.debug = true;
         
-        spawnPointsGroup = game.add.group();
-        spawnPointsGroup.enableBody = true;
-        map.createFromObjects('SpawnPoints', 248, "SpawnPointSprite", 0, true, false, spawnPointsGroup);
-        /* Print out all of the spawnpoint's names, x, and y positions to the console
-        for(var i = 0; i < spawnPointsGroup.children.length; i++) {
-            console.log(spawnPointsGroup.children[i].name + " " + spawnPointsGroup.children[i].x + " " + spawnPointsGroup.children[i].y);}
-        */
+        // Activate the spawn points from the tilemap
+            spawnPointsGroup = game.add.group();
+            //spawnPointsGroup.enableBody = true;
+            map.createFromObjects('SpawnPoints', 248, 'EmptySprite', 0, true, false, spawnPointsGroup);
+        
+            friendWaypointsGroup = game.add.group();
+            map.createFromObjects('FriendWaypoints', 3442, 'PokeballSprite', 0, true, false, friendWaypointsGroup);
+        
+            for(var i = 0; i < friendWaypointsGroup.length; i++) {
+                console.log(friendWaypointsGroup.children[i].name + ": " + friendWaypointsGroup.children[i].x + ", " + friendWaypointsGroup.children[i].y);
+            }
         
         // Resize the world to...
-        groundLayer.resizeWorld();
-        
-        //hillsLayer.debug = true;
-        //treesLayer.debug = true;
-        //buildingsLayer.debug = true;
-        //riverbankLayer.debug = true;
+            //groundLayer.resizeWorld();
         
         // Turn on the layer' collisions
         map.setCollisionBetween(1, 10000, true, 'Hills');
@@ -466,19 +480,36 @@ function mainGameState(game) {
         map.setCollisionBetween(1, 15000, true, 'Water Animated');
         
         for(var p = 0; p < 6; p++) {
-            currentPokeballs[p] = game.add.image(10 + p * 40, 560, "PokeballSprite");
+            currentPokeballs[p] = game.add.image(10 + p * 60, 560, "PokeballSprite");
             currentPokeballs[p].visible = false;
         }
         
-        // *** CREATE PLAYER ***
+        // Create a group so that the player will sort behind objects
+        depthGroup = game.add.group();
+        depthGroup.add(depthUnderLayer);
         
-        player = game.add.sprite(472, 170, 'RedheadGirlSprite', 0);
-        player.anchor.setTo(0.5, 0.5);
-        game.physics.enable(player);
-        player.body.setSize(13, 26, 4, 3);
-        player.scale.set(0.8);
-        player.body.fixedRotation = true;
-        player.body.collideWorldBounds = true;
+        
+        
+        
+        // *** CREATE PLAYER ***
+            player = game.add.sprite(750, 510, 'RedheadGirlSprite', 0);
+            player.name = playerName;
+            player.characterType = "NPC";
+        
+            player.anchor.setTo(0.5, 0.5);
+            game.physics.enable(player);
+            player.body.setSize(13, 26, 4, 3);
+            player.scale.set(0.8);
+            player.body.fixedRotation = true;
+            //player.body.collideWorldBounds = true;
+            depthGroup.add(player);
+        
+        // Allow the player to mouse over the pokemon to see it's stats
+                player.inputEnabled = true;
+                player.events.onInputOver.add(info, this);
+                player.events.onInputOut.add(infoExit, this);
+        
+        //game.camera.follow(player);
         
         idle = player.animations.add('idle', [0], 3, true, true);
         walkDown = player.animations.add('walkDown', [2, 3], 3, true, true);
@@ -497,34 +528,61 @@ function mainGameState(game) {
         
         // *** CREATE POKEMON ***
         
-        function create_pokemon(x, y, name, level) {
-            var chooseSpawnPoint = game.rnd.integerInRange(0, spawnPointsGroup.children.length - 1);
-            if(name === "Pikachu") {
-                var pokemon = game.add.sprite(spawnPointsGroup.children[chooseSpawnPoint].x, spawnPointsGroup.children[chooseSpawnPoint].y, 'PikachuSprite');
-                pokemon.sprite = 'PikachuSprite';
-            }
-            if(name === "Vulpix") {
-                var pokemon = game.add.sprite(spawnPointsGroup.children[chooseSpawnPoint].x, spawnPointsGroup.children[chooseSpawnPoint].y, 'VulpixSprite');
-                pokemon.sprite = 'VulpixSprite'
-            }
-            spawnPointsGroup.removeChildAt(chooseSpawnPoint);
+        function Pokemon(name, level, x, y) {
+            var pokemon;
             
-            game.physics.arcade.enable(pokemon);
-            pokemon.body.setSize(17, 20, 6, 8);
-            pokemon.scale.set(0.8);
-            pokemon.body.fixedRotation = true;
-            pokemon.anchor.setTo(0.5, 0.5);
-            pokemon.body.drag.setTo(500, 500);
-            pokemon.body.collideWorldBounds = true;
+            // Create pokemon sprite and give spawn it in a random position
+                var chooseSpawnPoint = game.rnd.integerInRange(0, spawnPointsGroup.children.length - 1);
+                x = spawnPointsGroup.children[chooseSpawnPoint].x;
+                y = spawnPointsGroup.children[chooseSpawnPoint].y;
+                if(name === "Bulbasaur") {
+                    pokemon = game.add.sprite(x, y, "BulbasaurSprite");
+                    pokemon.sprite = 'BulbasaurSprite';
+                }
+                if(name === "Charmander") {
+                    pokemon = game.add.sprite(x, y, "CharmanderSprite");
+                    pokemon.sprite = 'CharmanderSprite';
+                }
+                if(name === "Squirtle") {
+                    pokemon = game.add.sprite(x, y, "SquirtleSprite");
+                    pokemon.sprite = 'SquirtleSprite';
+                }
+                if(name === "Pikachu") {
+                    pokemon = game.add.sprite(x, y, "PikachuSprite");
+                    pokemon.sprite = 'PikachuSprite';
+                }
+                if(name === "Vulpix") {
+                    pokemon = game.add.sprite(x, y, "VulpixSprite");
+                    pokemon.sprite = 'VulpixSprite';
+                }
+                spawnPointsGroup.removeChildAt(chooseSpawnPoint);
             
-            pokemon.name = name;
-            pokemon.level = level;
-            pokemon.walkSpeed = 25;
-            pokemon.horizontalSpeed = 0;
-            pokemon.verticalSpeed = 0;
-            pokemon.caught = false;
+            // Add attributes
+                pokemon.name = name;
+                pokemon.characterType = "Pokemon";
+                pokemon.level = level;
+                pokemon.walkSpeed = 25;
+                pokemon.horizontalSpeed = 0;
+                pokemon.verticalSpeed = 0;
+                pokemon.caught = false;
             
-            // Add animations for Pikachu
+            // Add physics
+                game.physics.arcade.enable(pokemon);
+                pokemon.body.setSize(17, 20, 6, 8);
+                pokemon.scale.set(0.8);
+                pokemon.body.fixedRotation = true;
+                pokemon.anchor.setTo(0.5, 0.5);
+                pokemon.body.drag.setTo(500, 500);
+                pokemon.body.collideWorldBounds = true;
+            
+                depthGroup.add(pokemon);
+            
+            // Allow the player to mouse over the pokemon to see it's stats
+                pokemon.inputEnabled = true;
+                pokemon.events.onInputOver.add(info, this);
+                pokemon.events.onInputOut.add(infoExit, this);
+
+            // Add animations
                 var idleDown = pokemon.animations.add('idleDown', [0], 4, true, true);
                 var idleUp = pokemon.animations.add('idleUp', [4], 4, true, true);
                 var idleLeft = pokemon.animations.add('idleLeft', [8], 4, true, true);
@@ -535,142 +593,186 @@ function mainGameState(game) {
                 var walkRight = pokemon.animations.add('walkRight', [14, 15], 4, true, true);
                 var happy = pokemon.animations.add('happy', [16, 17, 18], 4, true, true);
             
-            var chooseActionTimer = 2;
-            
-            game.time.events.loop(Phaser.Timer.SECOND, incrementTimer);
-            
-            pokemon.update = function() {
-                pokemon.body.velocity.x = pokemon.horizontalSpeed;
-                pokemon.body.velocity.y = pokemon.verticalSpeed;
-                
-                if(pokemon.caught === true) {
-                    if(game.physics.arcade.distanceBetween(pokemon, player) > 50) {
-                        game.physics.arcade.moveToXY(pokemon, player.x, player.y);
+            // Increment a timer, which will then trigger actions and animations
+                game.time.events.loop(Phaser.Timer.SECOND, incrementTimer);
+                var chooseActionTimer = 2;
+                function incrementTimer() {
+                    if(pokemon.caught == false) {
+                        chooseActionTimer++;
+                        if(chooseActionTimer >= 3) {
+                            chooseAction();
+                            chooseActionTimer = 0;
+                        }
                     }
                 }
-            };
             
-            function incrementTimer() {
-                if(pokemon.caught == false) {
-                    chooseActionTimer++;
-                    if(chooseActionTimer >= 3) {
-                        chooseAction();
-                        chooseActionTimer = 0;
+            // Function that will choose a random direction, and either idle or move/animate in that direction
+                function chooseAction() {
+                    var randomAction = game.rnd.integerInRange(1, 8);
+
+                    switch(randomAction) {
+                        case 1:
+                            pokemon.animations.play('idleDown', 4, true);
+                            pokemon.horizontalSpeed = 0;
+                            pokemon.verticalSpeed = 0;
+                            break;
+                        case 2:
+                            pokemon.animations.play('idleUp', 4, true);
+                            pokemon.horizontalSpeed = 0;
+                            pokemon.verticalSpeed = 0;
+                            break;
+                        case 3:
+                            pokemon.animations.play('idleLeft', 4, true);
+                            pokemon.horizontalSpeed = 0;
+                            pokemon.verticalSpeed = 0;
+                            break;
+                        case 4:
+                            pokemon.animations.play('idleRight', 4, true);
+                            pokemon.horizontalSpeed = 0;
+                            pokemon.verticalSpeed = 0;
+                            break;
+                        case 5:
+                            pokemon.animations.play('walkDown', 4, true);
+                            pokemon.horizontalSpeed = 0;
+                            pokemon.verticalSpeed = pokemon.walkSpeed;
+                            break;
+                        case 6:
+                            pokemon.animations.play('walkUp', 4, true);
+                            pokemon.horizontalSpeed = 0;
+                            pokemon.verticalSpeed = -pokemon.walkSpeed;
+                            break;
+                        case 7:
+                            pokemon.animations.play('walkLeft', 4, true);
+                            pokemon.horizontalSpeed = -pokemon.walkSpeed;
+                            pokemon.verticalSpeed = 0;
+                            break;
+                        case 8:
+                            pokemon.animations.play('walkRight', 4, true);
+                            pokemon.horizontalSpeed = pokemon.walkSpeed;
+                            pokemon.verticalSpeed = 0;
+                            break;
                     }
                 }
-            }
             
-            var randomAction = 0;
-            function chooseAction() {
-                var randomAction = game.rnd.integerInRange(1, 8);
-                
-                switch(randomAction) {
-                    case 1:
-                        pokemon.animations.play('idleDown', 4, true);
-                        pokemon.horizontalSpeed = 0;
-                        pokemon.verticalSpeed = 0;
-                        break;
-                    case 2:
-                        pokemon.animations.play('idleUp', 4, true);
-                        pokemon.horizontalSpeed = 0;
-                        pokemon.verticalSpeed = 0;
-                        break;
-                    case 3:
-                        pokemon.animations.play('idleLeft', 4, true);
-                        pokemon.horizontalSpeed = 0;
-                        pokemon.verticalSpeed = 0;
-                        break;
-                    case 4:
-                        pokemon.animations.play('idleRight', 4, true);
-                        pokemon.horizontalSpeed = 0;
-                        pokemon.verticalSpeed = 0;
-                        break;
-                    case 5:
-                        pokemon.animations.play('walkDown', 4, true);
-                        pokemon.horizontalSpeed = 0;
-                        pokemon.verticalSpeed = pokemon.walkSpeed;
-                        break;
-                    case 6:
-                        pokemon.animations.play('walkUp', 4, true);
-                        pokemon.horizontalSpeed = 0;
-                        pokemon.verticalSpeed = -pokemon.walkSpeed;
-                        break;
-                    case 7:
-                        pokemon.animations.play('walkLeft', 4, true);
-                        pokemon.horizontalSpeed = -pokemon.walkSpeed;
-                        pokemon.verticalSpeed = 0;
-                        break;
-                    case 8:
-                        pokemon.animations.play('walkRight', 4, true);
-                        pokemon.horizontalSpeed = pokemon.walkSpeed;
-                        pokemon.verticalSpeed = 0;
-                        break;
-                }
-            }
+            // Update function for the pokemon
+                pokemon.update = function() {
+                    pokemon.body.velocity.x = pokemon.horizontalSpeed;
+                    pokemon.body.velocity.y = pokemon.verticalSpeed;
+
+                    if(pokemon.caught === true) {
+                        if(game.physics.arcade.distanceBetween(pokemon, player) > 50) {
+                            game.physics.arcade.moveToXY(pokemon, player.x, player.y);
+                        }
+                    }
+                };
             
             return pokemon;
         }
         
+        allPokemon[0] = new Pokemon('Bulbasaur', game.rnd.integerInRange(1, 4), 0, 0);
+        allPokemon[1] = new Pokemon('Charmander', game.rnd.integerInRange(1, 4), 0, 0);
+        allPokemon[2] = new Pokemon('Squirtle', game.rnd.integerInRange(1, 4), 0, 0);
+        allPokemon[3] = new Pokemon('Pikachu', game.rnd.integerInRange(1, 4), 0, 0);
+        allPokemon[4] = new Pokemon('Vulpix', game.rnd.integerInRange(1, 4), 0, 0);
         
-        
-        pikachu = create_pokemon(460, 250, 'Pikachu', game.rnd.integerInRange(1, 3));
-        pikachu.inputEnabled = true;
-        
-        vulpix = create_pokemon(500, 250, 'Vulpix', game.rnd.integerInRange(1, 3));
-        vulpix.inputEnabled = true;
-        
-        pikachu2 = create_pokemon(460, 250, 'Pikachu', game.rnd.integerInRange(1, 3));
-        pikachu2.inputEnabled = true;
-        
-        vulpix2 = create_pokemon(500, 250, 'Vulpix', game.rnd.integerInRange(1, 3));
-        vulpix2.inputEnabled = true;
-        
-        pikachu3 = create_pokemon(460, 250, 'Pikachu', game.rnd.integerInRange(1, 3));
-        pikachu3.inputEnabled = true;
-        
-        vulpix3 = create_pokemon(500, 250, 'Vulpix', game.rnd.integerInRange(1, 3));
-        vulpix3.inputEnabled = true;
-        
-        
-        
-        
-        pikachu.events.onInputOver.add(pokemonInfo, this);
-        pikachu.events.onInputOut.add(pokemonInfoExit, this);
-        
-        vulpix.events.onInputOver.add(pokemonInfo, this);
-        vulpix.events.onInputOut.add(pokemonInfoExit, this);
-        
-        pikachu2.events.onInputOver.add(pokemonInfo, this);
-        pikachu2.events.onInputOut.add(pokemonInfoExit, this);
-        
-        vulpix2.events.onInputOver.add(pokemonInfo, this);
-        vulpix2.events.onInputOut.add(pokemonInfoExit, this);
-        
-        pikachu3.events.onInputOver.add(pokemonInfo, this);
-        pikachu3.events.onInputOut.add(pokemonInfoExit, this);
-        
-        vulpix3.events.onInputOver.add(pokemonInfo, this);
-        vulpix3.events.onInputOut.add(pokemonInfoExit, this);
         
         // ****************** CREATE NPCs ******************
         
-        boy = game.add.sprite(850, 510, 'BoySprite', 0);
-        boy.anchor.setTo(0.5, 0.5);
-        boy.scale.set(0.5);
-        game.physics.enable(boy);
-        boy.body.fixedRotation = true;
+        // Friend
         
-        idleLeftBoy = boy.animations.add('idleLeftBoy', [4], 3, true, true);
-        walkLeftBoy = boy.animations.add('walkLeftBoy', [5, 6, 7], 3, true, true);
+        function NPC(name, npcSprite,  x, y) {
+            var npc;
+            
+            // Create the NPC
+                npc = game.add.sprite(x, y, npcSprite);
+            
+            // Add attributes
+                npc.name = name;
+                npc.characterType = "NPC";
+                npc.sprite = npcSprite;
+                npc.walkSpeed = 25;
+                npc.horizontalSpeed = 0;
+                npc.verticalSpeed = 0;
+                npc.wandering = false;
+                npc.text = "You need to capture a Pokemon\n before you head out of town!";
+            
+            // Add physics
+                game.physics.arcade.enable(npc);
+                npc.scale.set(0.5);
+                npc.anchor.setTo(0.5, 0.5);
+                npc.body.fixedRotation = true;
+                npc.body.immovable = true;
+                depthGroup.add(npc);
+            
+            // Allow the player to mouse over the pokemon to see it's stats
+                npc.inputEnabled = true;
+                npc.events.onInputOver.add(info, this);
+                npc.events.onInputOut.add(infoExit, this);
+
+            // Add animations
+                var idleLeft = npc.animations.add('idleLeft', [4], 3, true, true);
+                var walkLeft = npc.animations.add('walkLeft', [5, 6, 7], 3, true, true);
+            
+            // Increment a timer, which will then trigger actions and animations
+                game.time.events.loop(Phaser.Timer.SECOND, incrementTimer);
+                var chooseActionTimer = 2;
+                function incrementTimer() {
+                    if(npc.wandering === true) {
+                        chooseActionTimer++;
+                        if(chooseActionTimer >= 3) {
+                            chooseAction();
+                            chooseActionTimer = 0;
+                        }
+                    }
+                }
+            
+            // Function that will choose a random direction, and either idle or move/animate in that direction
+                function chooseAction() {
+                    var randomAction = game.rnd.integerInRange(1, 2);
+
+                    switch(randomAction) {
+                        case 1:
+                            npc.animations.play('idleLeft', 4, true);
+                            npc.horizontalSpeed = 0;
+                            npc.verticalSpeed = 0;
+                            break;
+                        case 2:
+                            npc.animations.play('walkLeft', 4, true);
+                            npc.horizontalSpeed = 0;
+                            npc.verticalSpeed = 0;
+                            break;
+                    }
+                }
+            
+            // Update function for the pokemon
+                npc.update = function() {
+                    //npc.body.velocity.x = npc.horizontalSpeed;
+                    //npc.body.velocity.y = npc.verticalSpeed;
+                };
+            
+            return npc;
+        }
         
-        // Create a group so that the player will sort behind objects
-        depthGroup = game.add.group();
-        depthGroup.add(depthUnderLayer);
-        depthGroup.add(player);
-        depthGroup.add(pikachu);
-        depthGroup.add(vulpix);
+        friend = new NPC('Thomas', 'BoySprite', 790, 510);
+        friend.animations.play('idleLeft', 4, true);
+        
+        
         depthGroup.add(depthOverLayer);
         
+        
+        // Add the text box
+            mainTextBox = game.add.image(game.width / 2, game.height / 2, "TextBox");
+            mainTextBox.scale.set(1);
+            mainTextBox.anchor.setTo(0.5, 0.5);
+            mainTextBox.alpha = 0.5;
+            mainTextBox.visible = false;
+        
+            mainTextStyle = { font: "18px Verdana", fill: "#111111", align: "center" };
+        
+            mainText = game.add.text(mainTextBox.x, mainTextBox.y, "", mainTextStyle);
+            mainText.stroke = '#000000';
+            mainText.strokeThickness = 1;
+            mainText.anchor.setTo(0.5, 0.5);
         
         // Add the info text
             var infoTextBox = game.add.image(700, 562, "TextBox");
@@ -678,17 +780,24 @@ function mainGameState(game) {
             infoTextBox.anchor.setTo(0.5, 0.5);
             infoTextBox.alpha = 0.5;
             infoTextBox.visible = false;
+        
             var infoStyle = { font: "18px Verdana", fill: "#111111", align: "center" };
+        
             var infoText = game.add.text(700, 565, "", infoStyle);
             infoText.stroke = '#000000';
             infoText.strokeThickness = 1.5;
             infoText.anchor.setTo(0.5, 0.5);
         
-            function pokemonInfo(pokemon) {
-                infoText.setText(pokemon.name + "\n Level: " + pokemon.level);
-                infoTextBox.visible = true;
+            function info(character) {
+                if(character.characterType === "NPC") {
+                    infoText.setText(character.name);
+                    infoTextBox.visible = true;
+                } else if(character.characterType === "Pokemon") {
+                    infoText.setText(character.name + "\n Level: " + character.level);
+                    infoTextBox.visible = true;
+                }
             }
-            function pokemonInfoExit(pokemon) {
+            function infoExit(character) {
                 infoText.setText("");
                 infoTextBox.visible = false;
             }
@@ -698,132 +807,143 @@ function mainGameState(game) {
     /***************************** UPDATE *****************************/
     
     function update() {
-        // Collision between player and vulpix
-        game.physics.arcade.collide(player, pikachu, catchPokemon);
-        game.physics.arcade.collide(player, vulpix, catchPokemon);
-        game.physics.arcade.collide(player, pikachu2, catchPokemon);
-        game.physics.arcade.collide(player, vulpix2, catchPokemon);
-        game.physics.arcade.collide(player, pikachu3, catchPokemon);
-        game.physics.arcade.collide(player, vulpix3, catchPokemon);
-        game.physics.arcade.collide(pikachu, vulpix);
-        game.physics.arcade.collide(player, boy, gameOver);
+        
+        if(player.position.x > 0 && player.position.x < 800) {
+            game.camera.x = 500;
+        } else if(player.position.x > 800 && player.position.x < 1600) {
+            game.camera.x = 800;
+        }
+        
+        // Collision between player and pokemon
+            for(var i = 0; i < allPokemon.length; i++) {
+                game.physics.arcade.collide(player, allPokemon[i], catchPokemon);
+            }
         
         // Collision between player and world
-        game.physics.arcade.collide(player, hillsLayer);
-        game.physics.arcade.collide(player, treesLayer);
-        game.physics.arcade.collide(player, buildingsLayer);
-        game.physics.arcade.collide(player, waterAnimatedLayer);
+            game.physics.arcade.collide(player, hillsLayer);
+            game.physics.arcade.collide(player, treesLayer);
+            game.physics.arcade.collide(player, buildingsLayer);
+            game.physics.arcade.collide(player, waterAnimatedLayer);
         
-        // Collision between Pikachu and world
-        game.physics.arcade.collide(pikachu, hillsLayer, pikachu.chooseAction);
-        game.physics.arcade.collide(pikachu, treesLayer, pikachu.chooseAction);
-        game.physics.arcade.collide(pikachu, buildingsLayer, pikachu.chooseAction);
-        game.physics.arcade.collide(pikachu, waterAnimatedLayer, pikachu.chooseAction);
+        // Collision between player and friend
+            if(game.physics.arcade.collide(player, friend, NPCMoveToDestination)) {
+                if(currentPokemon.length >= 1) {
+                    friend.body.immovable = false;
+                    //friend.horizontalSpeed = 50;
+                    
+                    
+                } else {
+                    mainTextBox.visible = true;
+                    mainText.setText(friend.text);
+                }
+            } else {
+                mainTextBox.visible = false;
+                mainText.setText("");
+            }
         
-        // Collision between vulpix and world
-        game.physics.arcade.collide(vulpix, hillsLayer, vulpix.chooseAction);
-        game.physics.arcade.collide(vulpix, treesLayer, vulpix.chooseAction);
-        game.physics.arcade.collide(vulpix, buildingsLayer, vulpix.chooseAction);
-        game.physics.arcade.collide(vulpix, waterAnimatedLayer, vulpix.chooseAction);
-        
-        // Collision between Pikachu and world
-        game.physics.arcade.collide(pikachu2, hillsLayer, pikachu2.chooseAction);
-        game.physics.arcade.collide(pikachu2, treesLayer, pikachu2.chooseAction);
-        game.physics.arcade.collide(pikachu2, buildingsLayer, pikachu2.chooseAction);
-        game.physics.arcade.collide(pikachu2, waterAnimatedLayer, pikachu2.chooseAction);
-        
-        // Collision between vulpix and world
-        game.physics.arcade.collide(vulpix2, hillsLayer, vulpix2.chooseAction);
-        game.physics.arcade.collide(vulpix2, treesLayer, vulpix2.chooseAction);
-        game.physics.arcade.collide(vulpix2, buildingsLayer, vulpix2.chooseAction);
-        game.physics.arcade.collide(vulpix2, waterAnimatedLayer, vulpix2.chooseAction);
-        
-        // Collision between Pikachu and world
-        game.physics.arcade.collide(pikachu3, hillsLayer, pikachu3.chooseAction);
-        game.physics.arcade.collide(pikachu3, treesLayer, pikachu3.chooseAction);
-        game.physics.arcade.collide(pikachu3, buildingsLayer, pikachu3.chooseAction);
-        game.physics.arcade.collide(pikachu3, waterAnimatedLayer, pikachu3.chooseAction);
-        
-        // Collision between vulpix and world
-        game.physics.arcade.collide(vulpix3, hillsLayer, vulpix3.chooseAction);
-        game.physics.arcade.collide(vulpix3, treesLayer, vulpix3.chooseAction);
-        game.physics.arcade.collide(vulpix3, buildingsLayer, vulpix3.chooseAction);
-        game.physics.arcade.collide(vulpix3, waterAnimatedLayer, vulpix3.chooseAction);
+        // Collision between pokemon and the world
+            for(var i = 0; i < allPokemon.length; i++) {
+                game.physics.arcade.collide(allPokemon[i], hillsLayer, allPokemon[i].chooseAction);
+                game.physics.arcade.collide(allPokemon[i], treesLayer, allPokemon[i].chooseAction);
+                game.physics.arcade.collide(allPokemon[i], buildingsLayer, allPokemon[i].chooseAction);
+                game.physics.arcade.collide(allPokemon[i], waterAnimatedLayer, allPokemon[i].chooseAction);
+
+                // Collision between all pokemon
+                for(var j = 0; j < allPokemon.length; j++) {
+                    game.physics.arcade.collide(allPokemon[i], allPokemon[j]);
+                }
+            }
         
         // Stop the player from running off
-        player.body.velocity.x = 0;
-        player.body.velocity.y = 0;
+            player.body.velocity.x = 0;
+            player.body.velocity.y = 0;
         
 
         // Player movement controls
-        if (game.input.keyboard.isDown(Phaser.Keyboard.W)) {
-            player.body.velocity.y = -walkSpeed;
-            player.animations.play('walkUp', 4, true);
-        } else if (game.input.keyboard.isDown(Phaser.Keyboard.S)) {
-            player.body.velocity.y = walkSpeed;
-            player.animations.play('walkDown', 4, true);
-        } else if (game.input.keyboard.isDown(Phaser.Keyboard.A)) {
-            player.body.velocity.x = -walkSpeed;
-            player.animations.play('walkLeft', 4, true);
-        } else if (game.input.keyboard.isDown(Phaser.Keyboard.D)) {
-            player.body.velocity.x = walkSpeed;
-            player.animations.play('walkRight', 4, true);
-        } else {
-            player.animations.play('idle', 4, true);
-        }
-        
-        if(boy.x <= 760) {
-            boy.body.velocity.x = 0;
-            boy.animations.play('idleLeftBoy', 4, true);
-        } else {
-            boy.animations.play('walkLeftBoy', 4, true);
-        }
+            if (game.input.keyboard.isDown(Phaser.Keyboard.W)) {
+                player.body.velocity.y = -walkSpeed;
+                player.animations.play('walkUp', 4, true);
+            } else if (game.input.keyboard.isDown(Phaser.Keyboard.S)) {
+                player.body.velocity.y = walkSpeed;
+                player.animations.play('walkDown', 4, true);
+            } else if (game.input.keyboard.isDown(Phaser.Keyboard.A)) {
+                player.body.velocity.x = -walkSpeed;
+                player.animations.play('walkLeft', 4, true);
+            } else if (game.input.keyboard.isDown(Phaser.Keyboard.D)) {
+                player.body.velocity.x = walkSpeed;
+                player.animations.play('walkRight', 4, true);
+            } else {
+                player.animations.play('idle', 4, true);
+            }
     }
     
     
     function catchPokemon(player, pokemon) {
         if(pokemon.caught === false && currentPokemon.length <= 6) {
+            // Add the music and then play it
+            music.pause();
+            var pokemonCaughtAudio = game.add.audio('PokemonCaughtAudio');
+            pokemonCaughtAudio.volume = musicVolume;
+            pokemonCaughtAudio.play();
+            pokemonCaughtAudio.onStop.add(resumeMusic, this);
+            
             pokemon.animations.play('happy', 4, true);
             pokemon.horizontalSpeed = 0;
             pokemon.verticalSpeed = 0;
             
             var ballLevelStyle = { font: "20px Verdana", fill: "#111111", align: "center" };
-            var ballLevelText = game.add.text(currentPokeballs[currentPokemon.length].x + 30, currentPokeballs[currentPokemon.length].y - 15, pokemon.level, ballLevelStyle);
+            var ballLevelText = game.add.text(currentPokeballs[currentPokemon.length].x + 20, currentPokeballs[currentPokemon.length].y - 35, "Lvl " + pokemon.level, ballLevelStyle);
             ballLevelText.anchor.setTo(0.5, 0.5);
-            var ballPokemonImage = game.add.image(currentPokeballs[currentPokemon.length].x, currentPokeballs[currentPokemon.length].y - 30, pokemon.sprite);
+            var ballPokemonImage = game.add.image(currentPokeballs[currentPokemon.length].x + 16, currentPokeballs[currentPokemon.length].y - 15, pokemon.sprite);
+            ballPokemonImage.anchor.setTo(0.5, 0.5);
             
             currentPokeballs[currentPokemon.length].visible = true;
             currentPokemon[currentPokemon.length] = pokemon;
             pokemon.caught = true;
             
-            
-            if(currentPokemon.length >= 6) {
-                game.physics.arcade.moveToXY(boy, 760, 510);
+            if(currentPokemon.length >= allPokemon.length) {
+                game.physics.arcade.moveToXY(friend, 760, 510);
             }
         }
     }
     
     
-    function gameOver() {
-        music.stop();
-        game.state.start("gameOver");
+    function NPCMoveToDestination() {
+        console.log(friendWaypointsGroup.length);
+        
+        for(var i = 0; i < friendWaypointsGroup.length; i++) {
+            var dest = friendWaypointsGroup.children[i];
+            
+            console.log(dest.name);
+
+            game.physics.arcade.moveToXY(friend, dest.x, dest.y);
+
+            if(game.physics.arcade.distanceBetween(friend, dest) < 5) {
+                console.log("hello");
+            }
+        }
+    }
+    
+    
+    function resumeMusic() {
+        music.resume();
     }
     
     
     function render() {
         // Input debug info
+        //game.debug.cameraInfo(game.camera, 32, 32);
         //game.debug.inputInfo(32, 32);
         //game.debug.spriteInfo(player, 32, 130);
-        //game.debug.pointer( game.input.activePointer );
+        game.debug.pointer( game.input.activePointer );
         
         //game.debug.body(player);
-        //game.debug.body(pikachu);
+        //game.debug.body(allPokemon[0]);
+        //game.debug.body(allPokemon[1]); 
     }
     
     
     return {"create": create, "update": update, "render": render};
-    
-    //console.log("hello");
 }
 
 /*****************************************************************************************
