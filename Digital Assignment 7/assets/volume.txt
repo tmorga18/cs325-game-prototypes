@@ -1,0 +1,19 @@
+game.load.spritesheet('RaiseVolume', 'assets/Main Menu/RaiseVolume.png', 250, 29, 3);
+game.load.spritesheet('LowerVolume', 'assets/Main Menu/LowerVolume.png', 250, 29, 3);
+
+// Add the Raise Volume Button
+        raiseVolume = game.add.button(500, 450, 'RaiseVolume', raiseVolume, this, 3, 1, 2, 3);
+        raiseVolume.anchor.setTo(0, 0);
+        // Add the Lower Volume Button
+        lowerVolume = game.add.button(500, 500, 'LowerVolume', lowerVolume, this, 3, 1, 2, 3);
+        lowerVolume.anchor.setTo(0, 0);
+
+function lowerVolume() {
+        musicVolume = musicVolume - 0.1;
+        introMusic.volume = musicVolume;
+    }
+    
+    function raiseVolume() {
+        musicVolume = musicVolume + 0.1;
+        introMusic.volume = musicVolume;
+    }
