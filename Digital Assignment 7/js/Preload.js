@@ -12,6 +12,7 @@ function preloadState(game) {
         game.load.spritesheet('RollDiceButtonSprite', 'assets/Game/RollDiceButton.png', 182, 32, 3);
         
         game.load.spritesheet('CardsSpritesheet', 'assets/Game/CardSpritesheet.png', 99, 134, 56);
+        game.load.spritesheet('FlipCardsButtonSprite', 'assets/Game/FlipCardsButton.png', 182, 32, 3);
     }
     
     function create() {
