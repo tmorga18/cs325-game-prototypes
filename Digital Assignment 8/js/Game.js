@@ -6,11 +6,30 @@ function mainGameState(game) {
     var gridHeight = 5;
     
     var selectedTile;
-    var selectedTileText;
     
-    var player1;
+    var player;
+    var playerScore = 0;
+    var playerScoreText;
+    
+    var ai;
+    var aiScore = 0;
+    var aiScoreText;
+    
+    var sign = 1;
+    var signText = "+";
+    
+    var turnsLeft;
+    var turnsLeftText;
+    
+    var botTurnTime = 100;
+    var timer = botTurnTime;
+    //var timerText;
+    
+    var botTurn = false;
     
     function create() {
+        turnsLeft = game.rnd.integerInRange(10, 20);
+        
         game.stage.backgroundColor = "#99ddff";
         
         // Create the grid
@@ -26,14 +45,44 @@ function mainGameState(game) {
         selectedTile = grid[0][0];
         
         // Text for the selected tile
-        CreateSelectedTileText(580, 20);
+        CreateScoresText(580, 20);
         
-        player1 = Werebear(grid[0][0].sprite.x, grid[0][0].sprite.y);
+        player = Werebear(640, 400);
+        ai = Werebear(720, 400);
+        ai.sprite.tint = 0x233000;
     }
     
     
     function update() {
+        playerScoreText.setText("Player Score:\n" + playerScore);
+        aiScoreText.setText("AI Score:\n" + aiScore);
+        turnsLeftText.setText("Turns Left:\n" + turnsLeft);
+        //timerText.setText(timer);
+        if(botTurn == true) {
+            game.input.enabled = false;
+            timer--;
+            if(timer <= 0) {
+                aiTurn();
+                botTurn = false;
+                game.input.enabled = true;
+            }
+        }
         
+        if(turnsLeft <= 0) {
+            var graphics = game.add.graphics(50, 300);
+        
+            graphics.lineStyle(10, 0x111111, 1);
+            graphics.drawRect(0, -150, 400, 300);
+
+            graphics.lineStyle(300, 0x111111, 0.9);
+            graphics.moveTo(0, 0);
+            graphics.lineTo(500, 0);
+
+            window.graphics = graphics;
+            
+            var gameOverText = game.add.text(300, 300, "GAME OVER!", { font: "50px Arial", fill: "#ff0044", align: "center"});
+            gameOverText.anchor.setTo(0.5, 0.5);
+        }
     }
     
     
@@ -58,21 +107,73 @@ function mainGameState(game) {
             selectedTile.sprite.tint = 0xffffff;
             selectedTile = tile;
             selectedTile.sprite.tint = 0xffcccc;
-            selectedTileText.setText("Selected Tile:\n" + selectedTile.gridNumber);
             
-            player1.sprite.x = selectedTile.sprite.x;
-            player1.sprite.y = selectedTile.sprite.y;
+            player.sprite.x = selectedTile.sprite.x;
+            player.sprite.y = selectedTile.sprite.y;
+            
+            if(sign == 1) {
+               playerScore += tile.gridNumber;
+            } else {
+               playerScore -= tile.gridNumber;
+            }
+            tile.gridNumber = 0;
+            text.setText(0);
+            
+            turnsLeft--;
+            
+            chooseSign();
+            botTurn = true;
+            timer = botTurnTime;
         }
 
         return tile;
     }
     
     
-    function CreateSelectedTileText(x, y) {
+    function aiTurn() {
+        console.log("AI TURN");
+        
+        var randomX = game.rnd.integerInRange(0, 4);
+        var randomY = game.rnd.integerInRange(0, 4);
+        
+        selectedTile = grid[randomX][randomY];
+        ai.sprite.x = selectedTile.sprite.x;
+        ai.sprite.y = selectedTile.sprite.y;
+        
+        console.log(selectedTile.gridNumber);
+        
+        if(sign == 1) {
+           aiScore += selectedTile.gridNumber;
+        } else {
+           aiScore -= selectedTile.gridNumber;
+        }
+        
+        turnsLeft--;
+    }
+    
+    
+    function chooseSign() {
+        sign = game.rnd.integerInRange(1, 2);
+        
+        if(sign == 1) {
+           signText.setText("Sign:\n+");
+        } else {
+           signText.setText("Sign:\n-");
+        }
+    }
+    
+    
+    function CreateScoresText(x, y) {
         var graphics = game.add.graphics(x, y);
         
         graphics.lineStyle(5, "#111111", 1);
-        graphics.drawRect(0, 0, 200, 100);
+        graphics.drawRect(0, 0, 200, 80);
+        
+        graphics.drawRect(0, 80, 200, 80);
+        
+        graphics.drawRect(0, 160, 200, 80);
+        
+        graphics.drawRect(0, 240, 200, 80);
         
         //graphics.lineStyle(100, "#ffffff", 0.9);
         //graphics.moveTo(0, -100);
@@ -80,8 +181,21 @@ function mainGameState(game) {
         
         window.graphics = graphics;
         
-        selectedTileText = game.add.text(x + 25, y + 10, "Selected Tile:\n", { font: "24px Arial", fill: "#ff0044", align: "center"});
-        //selectedTileText.anchor.setTo(0.5, 0.5);
+        goalText = game.add.text(20, 10, "Try to keep your score as close to zero as you can!", { font: "24px Arial", fill: "#ff0044", align: "center"});
+        
+        playerScoreText = game.add.text(x + 100, y + 40, "Player Score:\n", { font: "24px Arial", fill: "#ff0044", align: "center"});
+        playerScoreText.anchor.setTo(0.5, 0.5);
+        
+        aiScoreText = game.add.text(x + 100, y + 125, "AI Score:\n", { font: "24px Arial", fill: "#ff0044", align: "center"});
+        aiScoreText.anchor.setTo(0.5, 0.5);
+        
+        signText = game.add.text(x + 100, y + 205, "Sign:\n+", { font: "24px Arial", fill: "#ff0044", align: "center"});
+        signText.anchor.setTo(0.5, 0.5);
+        
+        turnsLeftText = game.add.text(x + 100, y + 285, "Turns Left:\n" + turnsLeft, { font: "24px Arial", fill: "#ff0044", align: "center"});
+        turnsLeftText.anchor.setTo(0.5, 0.5);
+        
+        //timerText = game.add.text(x + 100, y + 500, timer, { font: "24px Arial", fill: "#ff0044", align: "center"});
     }
     
     
@@ -89,9 +203,6 @@ function mainGameState(game) {
         var werebear = {};
 
         werebear.sprite = game.add.sprite(x, y, "WerebearSpritesheet", 0);
-
-        // Attributes
-
 
         // Add physics
         game.physics.arcade.enable(werebear.sprite);
